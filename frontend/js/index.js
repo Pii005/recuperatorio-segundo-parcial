@@ -14,6 +14,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         await eliminarTodo(); 
         await crearUno();
         await back();
+        await eliminarUno();
+        await editarItem();
+        await obtenerPromedio();
+        await filtrarTabla();
+        await btnCancelar();
     } catch (error) {
         console.error("Error during DOMContentLoaded event:", error);
     }
@@ -26,6 +31,7 @@ async function actualizadorTabla(e) {
         limpiarTabla();
         let objetos = await GetAll();
         items = objetos.map(obj => new Planeta(
+            obj.id,
             obj.nombre,
             obj.tamano,
             obj.masa,
@@ -35,7 +41,7 @@ async function actualizadorTabla(e) {
             obj.poseeAnillo,
             obj.composicionAtmosferica
         ));
-        rellenarTabla(items);
+        await rellenarTabla(items);
     } catch (error) {
         console.error("Error al actualizar tabla:", error);
         alert("Error al actualizar tabla: " + error.message);
@@ -44,7 +50,7 @@ async function actualizadorTabla(e) {
     }
 }
 
-function limpiarTabla() {
+async function limpiarTabla() {
     items.length = 0;
     const tabla = document.getElementById("table-items");
     if (!tabla) {
@@ -60,12 +66,9 @@ function limpiarTabla() {
     }
 }
 
-function actualizarPagina() {
-    location.reload();
-}
 
 // addRowClickListener(nuevaFila, index); // Asignar el listener a la fila con el índice correcto
-function rellenarTabla(items) {
+async function rellenarTabla(items) {
     const tabla = document.getElementById("table-items");
     let tbody = tabla.getElementsByTagName('tbody')[0];
 
@@ -93,8 +96,9 @@ function rellenarTabla(items) {
 
 
 
-function actualizarFormulario() {
+async function actualizarFormulario() {
     formulario.reset();
+    selectedItemIndex = null;
 }
 
 async function eliminarTodo() 
@@ -107,10 +111,11 @@ async function eliminarTodo()
         if (rta) {
         try {
             mostrarSpinner();
-            await DeleteAll();
-            items.splice(0, items.length); // Limpiar el array local
-            limpiarTabla(); // Volver a cargar los items y actualizar la tabla
-            actualizarFormulario();
+            await DeleteAll().then(promise =>
+            {
+                actualizarFormulario(); 
+                actualizadorTabla();
+            });
         } catch (error) {
             alert(error);
         } finally {
@@ -123,8 +128,10 @@ async function eliminarTodo()
 async function crearUno() {
     formulario.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
+        var fechaActual = new Date();
+
         const model = new Planeta(
+            fechaActual.getTime(),
             formulario.querySelector("#Nombre").value,
             formulario.querySelector("#Tamaño").value,
             formulario.querySelector("#Masa").value,
@@ -141,9 +148,11 @@ async function crearUno() {
             mostrarSpinner();
             if (respuesta) {
             try {
-                await CreateOne(model);
-                actualizarFormulario(); 
-                actualizadorTabla();
+                await CreateOne(model).then(promise =>
+                {
+                    actualizarFormulario(); 
+                    actualizadorTabla();
+                });
                 //limpiarTabla();
             } catch (error) {
                 alert(error);
@@ -177,16 +186,16 @@ function obtenerValorCheckBot(id) { // CHECKBOX
 
 function addRowClickListener(row, index) {
     row.addEventListener('click', () => {
-    const cells = row.querySelectorAll('td');
-    const rowData = Array.from(cells).map(cell => cell.textContent);
-    console.log(rowData);
-    inicirEdicion(rowData); 
+        const cells = row.querySelectorAll('td');
+        const rowData = Array.from(cells).map(cell => cell.textContent);
+        selectedItemIndex = index;
+        inicirEdicion(rowData); 
     });
+
 }
 
-
-
 async function inicirEdicion(planeta) {
+    console.log(planeta[0]);
     formulario.querySelector("#Nombre").value = planeta[1];
     formulario.querySelector("#Tamaño").value = planeta[2];
     formulario.querySelector("#Masa").value = planeta[3];
@@ -210,9 +219,47 @@ async function inicirEdicion(planeta) {
     mostrarBotones();
 }
 
-async function editarItem() {}
+async function editarItem() {
+    const btn = document.getElementById("btn-edit");
+    btn.addEventListener('click', async () =>{
+        if (selectedItemIndex === null) return;
+    
+        const item = items[selectedItemIndex]; // Obtener el item a editar
+        // var fechaActual = new Date();
 
-async function borrarFormulario() {}
+        const model = new Planeta(
+        item.id,
+        formulario.querySelector("#Nombre").value,
+        formulario.querySelector("#Tamaño").value,
+        formulario.querySelector("#Masa").value,
+        getselect(), // Obtener valor de select
+        formulario.querySelector("#Distancia").value,
+        obtenerValorCheckBot('pvida'),
+        obtenerValorCheckBot('panillo'), // Obtener valor de radio
+        formulario.querySelector("#composicion").value
+        );
+        
+        // const respuesta = true;
+    
+        
+        mostrarSpinner();
+        console.log("EDITANDO");
+        try {
+            await UpdateById(item.id, model); // Editar en el servidor
+            // await loadItems(); // Volver a cargar los items y actualizar la tabla
+            await actualizarFormulario();
+            await actualizadorTabla();
+            ocultarBotones(); // Ocultar botones de edición
+            selectedItemIndex = null; // Resetear el índice seleccionado
+        } catch (error) {
+            alert(error);
+            console.log(error);
+        } finally {
+            ocultarSpinner();
+        }
+
+    });
+}
 
 async function back() {
     const btn = document.getElementById("btn-back");
@@ -234,6 +281,174 @@ async function back() {
     });
 }
 
-async function elimirUno() {
-    
+async function eliminarUno() {
+    const btn = document.getElementById("btn-delete-one");
+    btn.addEventListener('click', async () => {
+        if (selectedItemIndex !== null) {
+            const rta = confirm('¿Desea eliminar el item?');
+
+            if (rta) {
+                const item = items[selectedItemIndex]; // Obtener el item a eliminar
+                items.splice(selectedItemIndex, 1); // Eliminar del array local
+                console.log(item.id);
+                mostrarSpinner();
+                try {
+                    console.log("Borrando: " + item.id);
+                    await DeleteById(item.id).then(response =>{
+                        actualizarFormulario(); 
+                        actualizadorTabla();
+                    }); // Eliminar del servidor
+                    selectedItemIndex = null;
+                } catch (error) {
+                    console.log(error);
+                    alert(error);
+                } finally {
+                    ocultarSpinner();
+                    limpiarTabla();
+                    ocultarBotones();
+                }
+            }
+        } else {
+            alert("No hay elemento seleccionado para eliminar.");
+        }
+    });
 }
+
+
+// PROMEDIO Y FILTRAR TABLA:
+async function obtenerPromedio() {
+    const btn = document.getElementById("filtrador");
+
+    btn.addEventListener("click", async (event) => {
+        event.preventDefault(); // Evitar el comportamiento predeterminado del botón
+
+        const selectElement = document.getElementById("filtro-text");
+        const tipoSeleccionado = selectElement.value.toLowerCase();
+    
+        if (!tipoSeleccionado) {
+            alert("Seleccione un tipo para calcular el promedio.");
+            return;
+        }
+    
+        const tabla = document.getElementById("table-items");
+        const filas = Array.from(tabla.querySelectorAll("tbody tr"));
+    
+        let suma = 0;
+        let contador = 0;
+    
+        filas.forEach((fila) => {
+            const celdas = fila.querySelectorAll("td");
+            const tipo = celdas[4].textContent.toLowerCase(); // Ajusta el índice según la estructura de tu tabla
+    
+            if (tipo === tipoSeleccionado) {
+                const tamano = parseFloat(celdas[5].textContent); // Ajusta el índice según la estructura de tu tabla
+                if (!isNaN(tamano)) {
+                    suma += tamano;
+                    contador++;
+                }
+            }
+        });
+    
+        const promedio = contador > 0 ? suma / contador : 0;
+        const promedioResult = document.getElementById("promedio-result");
+    
+        if (promedio != 0) {
+            promedioResult.value = promedio.toFixed(2);
+        } else {
+            promedioResult.value = "N/A";
+        }
+    });
+}
+
+
+async function filtrarTabla() {
+    const btn = document.getElementById("filtrar-Tabla");
+
+    btn.addEventListener("click", async (e) => {
+        // Obtener todos los checkboxes
+        let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        
+        // Variables para almacenar los campos seleccionados
+        let camposSeleccionados = [];
+
+        // Iterar sobre cada checkbox y verificar si está seleccionado
+        checkboxes.forEach(function(checkbox) {
+            if (checkbox.checked) {
+                camposSeleccionados.push(checkbox.value); // Agregar el valor del checkbox seleccionado al array
+            }
+        });
+
+        // Mostrar solo las columnas seleccionadas en la tabla
+        console.log(camposSeleccionados);
+        mostrarColumnasSeleccionadas(camposSeleccionados);
+    });
+}
+
+function mostrarColumnasSeleccionadas(camposSeleccionados) {
+    // Obtener la tabla y su cabecera
+    let table = document.getElementById("table-items");
+    let header = table.querySelector("thead tr");
+    
+    // Obtener todas las filas de datos
+    let rows = table.querySelectorAll("tbody tr");
+    
+    // Mostrar/ocultar cabeceras
+    header.querySelectorAll("th").forEach((th, index) => {
+        let headerText = th.textContent.toLowerCase().trim();
+        // Sconsole.log(headerText);
+        if (!camposSeleccionados.includes(headerText)) {
+            th.style.display = "none";
+        } else {
+            th.style.display = "";
+        }
+    });
+
+    // Iterar sobre las filas y mostrar solo las columnas seleccionadas
+    rows.forEach((row) => {
+        let cells = row.querySelectorAll("td");
+        
+        cells.forEach((cell, index) => {
+            let headerText = header.querySelector(`th:nth-child(${index + 1})`).textContent.toLowerCase().trim();
+            if (!camposSeleccionados.includes(headerText)) {
+                cell.style.display = "none";
+            } else {
+                cell.style.display = ""; // Mostrar celda si está en los campos seleccionados
+            }
+        });
+    });
+}
+
+async function actualizarEncabezadoTabla() {
+    const tabla = document.getElementById("table-items");
+    const header = tabla.querySelector("thead tr");
+
+    // Aquí actualizas el encabezado según tus necesidades
+    // Por ejemplo, puedes redefinir el innerHTML del header según las columnas que desees mostrar
+    header.innerHTML = `
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Tamaño</th>
+        <th>Masa</th>
+        <th>Tipo</th>
+        <th>Distancia al Sol</th>
+        <th>Presencia de Vida</th>
+        <th>Posee Anillo</th>
+        <th>Composición Atmosférica</th>
+    `;
+}
+
+async function btnCancelar() {
+    const btn = document.getElementById("cancelador");
+
+    btn.addEventListener("click", async () => {
+        mostrarSpinner();
+        console.log("reiniciando...");
+        await actualizadorTabla(); // Resetear el formulario
+        await actualizarEncabezadoTabla();
+        ocultarSpinner();
+        console.log("listo!");
+    });
+}
+
+
+

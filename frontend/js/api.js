@@ -103,10 +103,10 @@
             if (xhr.status === 200) {
             resolve("Elemento eliminado correctamente.");
             } else if (xhr.status === 404) {
-            reject(new Error("Casa no encontrada"));
+            reject(new Error("Planeta no encontrado"));
             } else {
             reject(new Error("ERR " + xhr.status + " :" + xhr.statusText));
-            }
+            } 
         }
         });
 

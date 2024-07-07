@@ -1,6 +1,6 @@
 export class planetaBase {
-    constructor(nombre,tamano,masa,tipo) {
-        this.id = Math.random();
+    constructor(id, nombre,tamano,masa,tipo) {
+        this.id = id;
         this.nombre = nombre;
         this.tamano = tamano;
         this.masa = masa;

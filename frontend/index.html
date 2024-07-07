@@ -111,15 +111,19 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="promedio-text" class="form-label">Promedio</label>
-                            <input required type="text" id="promedio-text" class="form-control" placeholder="ejem: 9000">
+                            <label for="promedio-text" class="form-label">Promedio: </label>
+                            <input type="text" id="promedio-result" class="form-control" placeholder="Resultado..." readonl>
                         </div>
-                        <button id="filtrador" type="submit" class="btn btn-primary">Filtrar</button>
+                        <button id="filtrador" class="btn btn-primary">Filtrar</button>
                         
                     </fieldset>
                 </form>
                 <div>
                     <legend><label for="filtro-text" class="form-label">Filtrar tabla</label> </legend>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="filterId" id="filterId" value="id" required>
+                        <label class="form-check-label" for="filterId">id</label>
+                        </div>
                     <div class="form-check">
                     <input class="form-check-input" type="checkbox" name="filterNombre" id="filterNombre" value="nombre" required>
                     <label class="form-check-label" for="filterNombre">Nombre</label>
@@ -141,18 +145,23 @@
                     </div>
 
                     <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="filterdistancia" id="filterdistancia" value="distancia" required>
-                    <label class="form-check-label" for="filterdistancia">distancia al sol</label>
+                    <input class="form-check-input" type="checkbox" name="filterdistancia" id="filterdistancia" value="distancia al sol" required>
+                    <label class="form-check-label" for="filterdistancia">Distancia al Sol</label>
                     </div>
 
                     <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="filteranillo" id="filteranillo" value="anillo" required>
-                    <label class="form-check-label" for="filteranillo">Anillo</label>
+                    <input class="form-check-input" type="checkbox" name="filtervida" id="filtervida" value="presenta vida" required>
+                    <label class="form-check-label" for="filtervida">Presenta Vida</label>
                     </div>
 
                     <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="filtercomposicion" id="filtercomposicion" value="composicion" required>
-                    <label class="form-check-label" for="filtercomposicion">composicion</label>
+                        <input class="form-check-input" type="checkbox" name="filteranillo" id="filteranillo" value="presenta anillo" required>
+                        <label class="form-check-label" for="filteranillo">Presenta Anillo</label>
+                    </div>
+    
+                    <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="filtercomposicion" id="filtercomposicion" value="composición" required>
+                    <label class="form-check-label" for="filtercomposicion">composición</label>
                     </div>
 
                     <button  class="btn btn-primary" id="filtrar-Tabla">Aceptar</button>
