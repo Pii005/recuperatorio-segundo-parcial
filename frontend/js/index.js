@@ -60,19 +60,18 @@ async function limpiarTabla() {
 
     const tbody = tabla.querySelector("tbody");
     if (tbody) {
-        tbody.innerHTML = ""; // Limpiar solo el contenido de tbody
+        tbody.innerHTML = ""; 
     } else {
         console.warn("Elemento 'tbody' no encontrado en la tabla.");
     }
 }
 
 
-// addRowClickListener(nuevaFila, index); // Asignar el listener a la fila con el índice correcto
 async function rellenarTabla(items) {
     const tabla = document.getElementById("table-items");
     let tbody = tabla.getElementsByTagName('tbody')[0];
 
-    tbody.innerHTML = ''; // Me aseguro que esté vacío, hago referencia al agregar otro
+    tbody.innerHTML = ''; 
 
     const celdas = ["id", "nombre", "tamano", "masa", "tipo", "distanciaAlSol", 
         "presenciaVida", "poseeAnillo", "composicionAtmosferica"];
@@ -87,9 +86,8 @@ async function rellenarTabla(items) {
         nuevaFila.appendChild(nuevaCelda);
         });
 
-        addRowClickListener(nuevaFila, index); // Asignar el listener a la fila con el índice correcto
+        addRowClickListener(nuevaFila, index); 
 
-        // Agregar la fila al tbody
         tbody.appendChild(nuevaFila);
     });
 }
@@ -110,12 +108,13 @@ async function eliminarTodo()
 
         if (rta) {
         try {
-            mostrarSpinner();
+            await mostrarSpinner();
             await DeleteAll().then(promise =>
             {
                 actualizarFormulario(); 
                 actualizadorTabla();
             });
+            ocultarBotones();
         } catch (error) {
             alert(error);
         } finally {
@@ -145,11 +144,12 @@ async function crearUno() {
             console.log(model);
             const respuesta = true;
         
-            mostrarSpinner();
             if (respuesta) {
-            try {
-                await CreateOne(model).then(promise =>
-                {
+                try {
+                    console.log("Creando...");
+                    await mostrarSpinner();
+                    await CreateOne(model).then(promise =>
+                        {
                     actualizarFormulario(); 
                     actualizadorTabla();
                 });
@@ -157,10 +157,11 @@ async function crearUno() {
             } catch (error) {
                 alert(error);
             } finally {
+                console.log("Planeta creado");
                 ocultarSpinner();
             }
             } else {
-            alert(respuesta.rta);
+                alert(respuesta.rta);
             }
         });
 }
@@ -235,7 +236,7 @@ async function editarItem() {
         getselect(), // Obtener valor de select
         formulario.querySelector("#Distancia").value,
         obtenerValorCheckBot('pvida'),
-        obtenerValorCheckBot('panillo'), // Obtener valor de radio
+        obtenerValorCheckBot('panillo'), 
         formulario.querySelector("#composicion").value
         );
         
@@ -243,18 +244,19 @@ async function editarItem() {
     
         
         mostrarSpinner();
-        console.log("EDITANDO");
+        console.log("EDITANDO: " + item.id);
         try {
             await UpdateById(item.id, model); // Editar en el servidor
             // await loadItems(); // Volver a cargar los items y actualizar la tabla
             await actualizarFormulario();
             await actualizadorTabla();
-            ocultarBotones(); // Ocultar botones de edición
+            await ocultarBotones(); // Ocultar botones de edición
             selectedItemIndex = null; // Resetear el índice seleccionado
         } catch (error) {
             alert(error);
             console.log(error);
         } finally {
+            console.log("Listo");
             ocultarSpinner();
         }
 
@@ -269,17 +271,20 @@ async function back() {
 
     if (rta) {
         try {
-            mostrarSpinner();
-            actualizarFormulario();
-            ocultarBotones(); // Ocultar botones al dejar de editar
+            console.log("Volviendo atras...");
+            await mostrarSpinner();
+            await actualizarFormulario();
+            await ocultarBotones(); 
         } catch (error) {
             alert(error);
         } finally {
+            console.log("Listo!!");
             ocultarSpinner();
         }
     }
     });
 }
+
 
 async function eliminarUno() {
     const btn = document.getElementById("btn-delete-one");
@@ -365,37 +370,30 @@ async function filtrarTabla() {
     const btn = document.getElementById("filtrar-Tabla");
 
     btn.addEventListener("click", async (e) => {
-        // Obtener todos los checkboxes
         let checkboxes = document.querySelectorAll('input[type="checkbox"]');
         
-        // Variables para almacenar los campos seleccionados
         let camposSeleccionados = [];
 
-        // Iterar sobre cada checkbox y verificar si está seleccionado
         checkboxes.forEach(function(checkbox) {
             if (checkbox.checked) {
-                camposSeleccionados.push(checkbox.value); // Agregar el valor del checkbox seleccionado al array
+                camposSeleccionados.push(checkbox.value); 
             }
         });
 
-        // Mostrar solo las columnas seleccionadas en la tabla
         console.log(camposSeleccionados);
         mostrarColumnasSeleccionadas(camposSeleccionados);
     });
 }
 
+
 function mostrarColumnasSeleccionadas(camposSeleccionados) {
-    // Obtener la tabla y su cabecera
     let table = document.getElementById("table-items");
     let header = table.querySelector("thead tr");
     
-    // Obtener todas las filas de datos
     let rows = table.querySelectorAll("tbody tr");
     
-    // Mostrar/ocultar cabeceras
     header.querySelectorAll("th").forEach((th, index) => {
         let headerText = th.textContent.toLowerCase().trim();
-        // Sconsole.log(headerText);
         if (!camposSeleccionados.includes(headerText)) {
             th.style.display = "none";
         } else {
@@ -403,7 +401,7 @@ function mostrarColumnasSeleccionadas(camposSeleccionados) {
         }
     });
 
-    // Iterar sobre las filas y mostrar solo las columnas seleccionadas
+
     rows.forEach((row) => {
         let cells = row.querySelectorAll("td");
         
@@ -412,18 +410,17 @@ function mostrarColumnasSeleccionadas(camposSeleccionados) {
             if (!camposSeleccionados.includes(headerText)) {
                 cell.style.display = "none";
             } else {
-                cell.style.display = ""; // Mostrar celda si está en los campos seleccionados
+                cell.style.display = "";
             }
         });
     });
 }
 
+
 async function actualizarEncabezadoTabla() {
     const tabla = document.getElementById("table-items");
     const header = tabla.querySelector("thead tr");
 
-    // Aquí actualizas el encabezado según tus necesidades
-    // Por ejemplo, puedes redefinir el innerHTML del header según las columnas que desees mostrar
     header.innerHTML = `
         <th>ID</th>
         <th>Nombre</th>
@@ -436,6 +433,7 @@ async function actualizarEncabezadoTabla() {
         <th>Composición Atmosférica</th>
     `;
 }
+
 
 async function btnCancelar() {
     const btn = document.getElementById("cancelador");
