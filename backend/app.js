@@ -1,135 +1,125 @@
-    const cors = require("cors"); // Importa el paquete cors
-    const express = require("express");
-    const app = express();
-    const port = 3000;
+const cors = require('cors'); // Importa el paquete cors
+const express = require('express');
+const app = express();
+const port = 3000;
 
-    app.use(cors()); // Habilita CORS para todas las rutas
-    app.use(express.json());
+app.use(cors()); // Habilita CORS para todas las rutas
+app.use(express.json());
 
-    let items = [
-    {
-        id: 1,
-        nombre: "Mercurio",
-        tamano: 4879,
-        masa: 0.33,
-        tipo: "Rocoso",
-        distanciaAlSol: 57.9,
-        poseeAnillo: false,
-        presenciaVida: false,
-        composicionAtmosferica: "Oxígeno, Sodio, Hidrógeno",
-    },
+let autos = [
+    { id: 1, titulo: 'Ford Fiesta', transaccion: 'Venta', descripcion: 'Auto en buen estado', precio : 15000, cantidadKilometros: 80000, cantidadPuertas: 5, potencia: 120 },
     {
         id: 2,
-        nombre: "Venus",
-        tamano: 12104,
-        masa: 4.87,
-        tipo: "Rocoso",
-        distanciaAlSol: 108.2,
-        poseeAnillo: false,
-        presenciaVida: false,
-        composicionAtmosferica: "Dióxido de carbono, Nitrógeno",
+        titulo: 'Chevrolet Cruze',
+        transaccion: 'Alquiler',
+        descripcion: 'Auto familiar',
+        precio: 20000,
+        cantidadKilometros: 60000,
+        cantidadPuertas: 4,
+        potencia: 140
     },
     {
         id: 3,
-        nombre: "Tierra",
-        tamano: 12742,
-        masa: 5.97,
-        tipo: "Rocoso",
-        distanciaAlSol: 149.6,
-        poseeAnillo: false,
-        presenciaVida: true,
-        composicionAtmosferica: "Nitrógeno, Oxígeno",
-    },
-    {
-        id: 4,
-        nombre: "Marte",
-        tamano: 6779,
-        masa: 0.642,
-        tipo: "Rocoso",
-        distanciaAlSol: 227.9,
-        poseeAnillo: false,
-        presenciaVida: false,
-        composicionAtmosferica: "Dióxido de carbono, Nitrógeno, Argón",
+        titulo: 'Toyota Corolla',
+        transaccion: 'Venta',
+        descripcion: 'Auto con poco uso',
+        precio: 22000,
+        cantidadKilometros: 30000,
+        cantidadPuertas: 4,
+        potencia: 130
     }
-    ];
+];
 
-    // Middleware para simular una demora de 3 segundos
-    const simulateDelay = (req, res, next) => {
-    setTimeout(next, 3000);
+// Middleware para simular una demora de 3 segundos
+const simulateDelay = (req, res, next) => {
+    setTimeout(next, 2500);
+};
+
+/**
+ * Obtiene todos los Planetas
+ */
+app.get('/autos', simulateDelay, (req, res) => {
+    res.json(autos);
+});
+
+/**
+ * Crea un nuevo Planeta
+ */
+app.post('/autos', simulateDelay, (req, res) => {
+    const { titulo, transaccion, descripcion, precio, cantidadKilometros, cantidadPuertas, potencia } = req.body;
+    const nuevoPlaneta = {
+        id: autos.length + 1,
+        titulo,
+        transaccion,
+        descripcion,
+        precio,
+        cantidadKilometros,
+        cantidadPuertas,
+        potencia
     };
-
-    /**
-     * Obtiene todas los items
-     */
-    app.get("/planetas", simulateDelay, (req, res) => {
-    res.json(items);
-    });
-
-    /**
-     * Crea una nueva Casa
-     */
-    app.post("/planetas", simulateDelay, (req, res) => {
-    const aux = req.body;
-    aux.id = items.length + 1;
-
-    items.push(aux);
-    res.status(200).json(aux);
-    });
-
-    /**
-     * Obtiene Casa por ID
-     */
-    app.get("/planetas/:id", simulateDelay, (req, res) => {
+    autos.push(nuevoPlaneta);
+    res.status(200).json(nuevoPlaneta);
+});
+/**
+ * Obtiene Planeta por ID
+ */
+app.get('/autos/:id', simulateDelay, (req, res) => {
     const id = parseInt(req.params.id);
-    const aux = items.find((p) => p.id === id);
-
-    if (aux) {
-        res.json(aux);
+    const planeta = autos.find(p => p.id === id);
+    if (planeta) {
+        res.json(planeta);
     } else {
-        res.status(404).send("Item no encontrado");
+        res.status(404).send('Planeta no encontrado');
     }
-    });
+});
 
-    /**
-     * Edita item por ID
-     */
-    app.put("/planetas/:id", simulateDelay, (req, res) => {
+/**
+ * Edita Planeta por ID
+ */
+app.put('/autos/:id', simulateDelay, (req, res) => {
     const id = parseInt(req.params.id);
-    const index = items.findIndex((p) => p.id === id);
-
+    const index = autos.findIndex(p => p.id === id);
     if (index !== -1) {
-        const aux = req.body;
-        aux.id = id;
-        items[index] = aux;
-
-        res.json(aux);
+        const { titulo, transaccion, descripcion, precio, cantidadKilometros, cantidadPuertas, potencia } = req.body;
+        const updatedPlaneta = {
+            id,
+            titulo,
+            transaccion,
+            descripcion,
+            precio,
+            cantidadKilometros,
+            cantidadPuertas,
+            potencia
+        };
+        autos[index] = updatedPlaneta;
+        res.json(updatedPlaneta);
     } else {
-        res.status(404).send("No encontrado");
+        res.status(404).send('Planeta no encontrado');
     }
-    });
+});
 
-    /**
-     * Elimina item por ID
-     */
-    app.delete("/planetas/:id", simulateDelay, (req, res) => {
+/**
+ * Elimina Planeta por ID
+ */
+app.delete('/autos/:id', simulateDelay, (req, res) => {
     const id = parseInt(req.params.id);
-    const index = items.findIndex((p) => p.id === id);
+    const index = autos.findIndex(p => p.id === id);
     if (index !== -1) {
-        items.splice(index, 1);
+        autos.splice(index, 1);
         res.status(200).send();
     } else {
-        res.status(404).send("No encontrado");
+        res.status(404).send('Planeta no encontrado');
     }
-    });
+});
 
-    /**
-     * Elimina todas los item
-     */
-    app.delete("/planetas", simulateDelay, (req, res) => {
-    items = [];
-    res.status(200).send("Todos los items han sido eliminados");
-    });
+/**
+ * Elimina todos los Planetas
+ */
+app.delete('/autos', simulateDelay, (req, res) => {
+    autos = [];
+    res.status(200).send('Todos los autos han sido eliminados');
+});
 
-    app.listen(port, () => {
+app.listen(port, () => {
     console.log(`Servidor escuchando en http://localhost:${port}`);
-    });
+});

@@ -1,17 +1,17 @@
 Obtener todos
-method: GET, path '/planetas'
+method: GET, path '/autos'
 
 Obtener uno
-method: GET, path '/planetas/ID'
+method: GET, path '/autos/ID'
 
 Crear uno
-method: POST, path '/planetas'
+method: POST, path '/autos'
 
 Actualizar uno
-method: PUT, path '/planetas/ID'
+method: PUT, path '/autos/ID'
 
 Eliminar uno
-method: DELETE, path '/planetas/ID'
+method: DELETE, path '/autos/ID'
 
 Eliminar todos
-method: DELETE, path '/planetas'
+method: DELETE, path '/autos'

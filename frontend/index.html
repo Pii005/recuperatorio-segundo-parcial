@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="./css/index.css" />
         <link rel="stylesheet" href="./css/form.css" />
         <link rel="stylesheet" href="./css/buttons.css" />
-        <link rel="icon" type="image/x-icon" href="assets/logo.svg" />
+        <link rel="icon" type="image/x-icon" href="./assets/logo (1).svg" />
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
         rel="stylesheet" 
@@ -18,12 +18,12 @@
 
         <script src="./js/index.js" type="module" defer></script>
 
-        <title>Administrador de planetas</title>
+        <title>Administrador de automoviles</title>
     </head>
     <body>
         <header class="flex">
         <div class="navegacion flex">
-            <img src="./assets/logo.svg" alt="Logo Principal" />
+            <img src="./assets/logo (1).svg" alt="Logo Principal" />
 
             <nav>
             <ul class="flex">
@@ -35,7 +35,7 @@
             </nav>
         </div>
 
-        <h1>Administrador de planetas</h1>
+        <h1>Administrador de automoviles</h1>
         </header>
 
     
@@ -44,41 +44,41 @@
             <div class="col-sm-12 col-md-8 col-lg-8 bg-white"> 
                 <form method="post" id="form-item">
                     <div class="mb-3">
-                            <legend>Información del planeta</legend>
-                            <h3>Nombre</h3>
-                            <input type="text"  class="form-control" required name="Nombre" placeholder="Ingrese Nombre" id="Nombre">
+                            <legend>Información del Auto</legend>
+                            <h3>titulo</h3>
+                            <input type="text"  class="form-control" required name="titulo" placeholder="Ingrese titulo" id="titulo">
 
-                            <h3>Tamaño</h3>
-                            <input type="text"  class="form-control" required name="Tamaño" placeholder="Ingrese Tamaño" id="Tamaño">
+                            <h3>Transaccion</h3>
+                            <div class="info-radio" required>
+                                <div class="radio-title">
+                                    <label for="rVenta" class="form-check-label">Venta</label>
+                                    <input type="radio"  class="form-check-input" name="transaccion" id="rVenta" value="Venta">
+                                </div>
+        
+                                <div class="radio-title">
+                                    <label for="rAlquiler" class="form-check-label">Alquiler</label>
+                                    <input type="radio"  class="form-check-input" name="transaccion" id="rAlquiler" value="Alquiler">
+                                </div>
+                            </div>
 
-                            <h3>Masa</h3>
-                            <input type="number"  class="form-control" required name="Masa" placeholder="Ingrese Masa" id="Masa">
-                            
                             <div class="info-descripcion">
-                                <h3>Tipo</h3>
-                                <select required class="form-select" name="tipo" id="tipo">
-                                <option value="rocoso">Rocoso</option>
-                                <option value="gaseoso">Gaseoso</option>
-                                <option value="helado">Helado</option>
-                                <option value="enano">Enano</option>
-                            </select>
-                                </div>
+                                <h3>Descripcion</h3>
+                                <input type="text"  class="form-control" required name="descripcion" 
+                                    placeholder="Descripcion, limite 25 caracteres" id="descripcion" maxlength="25">
+                            </div>
 
-                                <h3>Distancia al sol</h3>
-                            <input type="number"  class="form-control" required name="Distancia" placeholder="Ingrese Distancia" id="Distancia">
-                            
-                            
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="vida" id="pvida" value="true">
-                                    <label class="form-check-label" for="pvida">Presenta vida</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="transaccion" id="panillo" value="true">
-                                    <label class="form-check-label" for="panillo">Presenta anillo</label>
+                                <div class="info-precio">
+                                    <h3>Precio</h3>
+                                    <input type="number" class="form-control" required name="precio" placeholder="Precio" id="precio">
                                 </div>
                             
-                            <h3>composicion</h3>
-                            <input type="text"  class="form-control" required name="composicion" placeholder="Ingrese composicion" id="composicion">
+                                <h3>Cantidad de puertas</h3>
+                                <input type="number" class="form-control" required name="puertas" placeholder="Puertas" id="puertas">
+                                <h3>Cantidad de kilometros</h3>
+                                <input type="number" class="form-control" required name="kilometros" placeholder="KMs" id="kilometros">
+                                <h3>Potencia</h3>
+                                <input type="number" class="form-control" required name="potencia" placeholder="Potencia" id="potencia">
+                        
                             <br /><br />
                             <button type="submit" id="guardado" class="btn btn-primary">Guardar</button>
 
@@ -101,13 +101,12 @@
                 <form id="filtro-form">
                     <fieldset>
                         <div class="mb-3">
-                            <legend> <label for="filtro-text" class="form-label">Filtrar planetas</label> </legend>
+                            <legend> <label for="filtro-text" class="form-label">Filtrar autos</label> </legend>
                             <select required id="filtro-text" class="form-select" aria-label="Default select example">
                             <option selected disabled>Seleccione un tipo</option>
-                            <option value="rocoso">Rocoso</option>
-                                <option value="gaseoso">Gaseoso</option>
-                                <option value="helado">Helado</option>
-                                <option value="enano">Enano</option>
+                            <option value="Venta">Venta</option>
+                                <option value="Alquiler">Alquiler</option>
+                                
                             </select>
                         </div>
                         <div class="mb-3">
@@ -120,49 +119,42 @@
                 </form>
                 <div>
                     <legend><label for="filtro-text" class="form-label">Filtrar tabla</label> </legend>
+                    
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="filterId" id="filterId" value="id" required>
-                        <label class="form-check-label" for="filterId">id</label>
-                        </div>
-                    <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="filterNombre" id="filterNombre" value="nombre" required>
-                    <label class="form-check-label" for="filterNombre">Nombre</label>
+                        <label class="form-check-label" for="filterId">ID</label>
                     </div>
-
+                    
                     <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="filtertamaño" id="filtertamaño" value="tamaño" required>
-                    <label class="form-check-label" for="filtertamaño">tamaño</label>
+                        <input class="form-check-input" type="checkbox" name="filterTransaccion" id="filterTransaccion" value="Transacción" required>
+                        <label class="form-check-label" for="filterTransaccion">Transacción</label>
                     </div>
-
+                    
                     <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="filterMasa" id="filterMasa" value="masa" required>
-                    <label class="form-check-label" for="filterMasa">Masa</label>
+                        <input class="form-check-input" type="checkbox" name="filterDescripcion" id="filterDescripcion" value="descripcion" required>
+                        <label class="form-check-label" for="filterDescripcion">Descripción</label>
                     </div>
-
+                    
                     <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="filterTipo" id="filterTipo" value="tipo" required>
-                    <label class="form-check-label" for="filterTipo">tipo</label>
+                        <input class="form-check-input" type="checkbox" name="filterPrecio" id="filterPrecio" value="precio" required>
+                        <label class="form-check-label" for="filterPrecio">Precio</label>
                     </div>
-
+                    
                     <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="filterdistancia" id="filterdistancia" value="distancia al sol" required>
-                    <label class="form-check-label" for="filterdistancia">Distancia al Sol</label>
+                        <input class="form-check-input" type="checkbox" name="filterCantidadPuertas" id="filterCantidadPuertas" value="cantidadPuertas" required>
+                        <label class="form-check-label" for="filterCantidadPuertas">Cantidad de Puertas</label>
                     </div>
-
+                    
                     <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="filtervida" id="filtervida" value="presenta vida" required>
-                    <label class="form-check-label" for="filtervida">Presenta Vida</label>
+                        <input class="form-check-input" type="checkbox" name="filterCantidadKilometros" id="filterCantidadKilometros" value="cantidadKilometros" required>
+                        <label class="form-check-label" for="filterCantidadKilometros">Cantidad de Kilómetros</label>
                     </div>
-
+                    
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="filteranillo" id="filteranillo" value="presenta anillo" required>
-                        <label class="form-check-label" for="filteranillo">Presenta Anillo</label>
+                        <input class="form-check-input" type="checkbox" name="filterPotencia" id="filterPotencia" value="potencia" required>
+                        <label class="form-check-label" for="filterPotencia">Potencia</label>
                     </div>
-    
-                    <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="filtercomposicion" id="filtercomposicion" value="composición" required>
-                    <label class="form-check-label" for="filtercomposicion">composición</label>
-                    </div>
+                </div>
 
                     <button  class="btn btn-primary" id="filtrar-Tabla">Aceptar</button>
                     <button id="cancelador" type="submit" class="btn btn-primary">Cancelar</button>
@@ -182,14 +174,13 @@
                     <thead>
                         <tr class="table-primary">
                             <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Tamaño</th>
-                            <th>Masa</th>
-                            <th>Tipo</th>
-                            <th>Distancia al Sol</th>
-                            <th>Presenta Vida</th>
-                            <th>Presenta Anillo</th>
-                            <th>Composición</th>
+                            <th>titulo</th>
+                            <th>Transacción</th>
+                            <th>descripcion</th>
+                            <th>precio</th>
+                            <th>cantidadKilometros</th>
+                            <th>cantidadPuertas</th>
+                            <th>potencia</th>
                         </tr>
                     </thead>
                     <tbody class="table-light"></tbody> 
@@ -236,7 +227,7 @@
     </nav>
 
         <div id="spinner" class="spinner">
-        <img src="./assets/logo.svg" alt="Spinner" class="spinner-img">
+        <img src="./assets/logo (1).svg" alt="Spinner" class="spinner-img">
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

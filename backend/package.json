@@ -4,14 +4,20 @@
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
+    "start:tailwind": "npx tailwindcss -i ./styles/index.css -o ./styles/output.min.css --watch --minify",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2"
-  }
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4"
+  },
+  "description": ""
 }

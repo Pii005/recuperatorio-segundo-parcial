@@ -1,7 +1,7 @@
-import { Planeta } from "./Planeta.js";
-import { mostrarSpinner, ocultarSpinner } from "./spinner.js";
+import {mostrarSpinner, ocultarSpinner} from "./spinner.js";
+import {mostrarBotones, ocultarBotones} from "./botones.js";
 import { GetAll, DeleteAll, CreateOne, UpdateById, DeleteById } from "./api.js";
-import { mostrarBotones, ocultarBotones } from "./botones.js";
+import {AnuncioAuto} from "./anuncio_auto.js";
 
 let items = [];
 const formulario = document.getElementById("form-item");
@@ -11,14 +11,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         ocultarBotones();
         await actualizadorTabla();
-        await eliminarTodo(); 
-        await crearUno();
+        await eliminarTodo();
+    // Edicion:
+        await  crearUno(); 
         await back();
         await eliminarUno();
-        await editarItem();
+        await editarItem(); 
+    // Filtrado
+        await btnCancelar();
         await obtenerPromedio();
         await filtrarTabla();
-        await btnCancelar();
     } catch (error) {
         console.error("Error during DOMContentLoaded event:", error);
     }
@@ -30,16 +32,15 @@ async function actualizadorTabla(e) {
         mostrarSpinner();
         limpiarTabla();
         let objetos = await GetAll();
-        items = objetos.map(obj => new Planeta(
+        items = objetos.map(obj => new AnuncioAuto(
             obj.id,
-            obj.nombre,
-            obj.tamano,
-            obj.masa,
-            obj.tipo,
-            obj.distanciaAlSol,
-            obj.presenciaVida,
-            obj.poseeAnillo,
-            obj.composicionAtmosferica
+            obj.titulo,
+            obj.transaccion,
+            obj.descripcion,
+            obj.precio,
+            obj.cantidadKilometros,
+            obj.cantidadPuertas,
+            obj.potencia
         ));
         await rellenarTabla(items);
     } catch (error) {
@@ -73,10 +74,19 @@ async function rellenarTabla(items) {
 
     tbody.innerHTML = ''; 
 
-    const celdas = ["id", "nombre", "tamano", "masa", "tipo", "distanciaAlSol", 
-        "presenciaVida", "poseeAnillo", "composicionAtmosferica"];
+    const celdas = [
+        "id",
+        "titulo",
+        "transaccion",
+        "descripcion",
+        "precio",
+        "cantidadKilometros",
+        "cantidadPuertas",
+        "potencia"
+    ];
     
     items.forEach((item, index) => {
+        console.log(item);
         let nuevaFila = document.createElement("tr");
         nuevaFila.classList.add("table-row");
 
@@ -98,6 +108,8 @@ async function actualizarFormulario() {
     formulario.reset();
     selectedItemIndex = null;
 }
+
+
 
 async function eliminarTodo() 
 {
@@ -123,168 +135,6 @@ async function eliminarTodo()
         }
     });
 }
-
-async function crearUno() {
-    formulario.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        var fechaActual = new Date();
-
-        const model = new Planeta(
-            fechaActual.getTime(),
-            formulario.querySelector("#Nombre").value,
-            formulario.querySelector("#Tamaño").value,
-            formulario.querySelector("#Masa").value,
-            getselect(), // Obtener valor de select
-            formulario.querySelector("#Distancia").value,
-            obtenerValorCheckBot('pvida'),
-            obtenerValorCheckBot('panillo'), // Obtener valor de radio
-            formulario.querySelector("#composicion").value,
-            );
-        
-            console.log(model);
-            const respuesta = true;
-        
-            if (respuesta) {
-                try {
-                    console.log("Creando...");
-                    await mostrarSpinner();
-                    await CreateOne(model).then(promise =>
-                        {
-                    actualizarFormulario(); 
-                    actualizadorTabla();
-                });
-                //limpiarTabla();
-            } catch (error) {
-                alert(error);
-            } finally {
-                console.log("Planeta creado");
-                ocultarSpinner();
-            }
-            } else {
-                alert(respuesta.rta);
-            }
-        });
-}
-
-function getselect()// OPCIONES **********
-{
-  const selectElement = document.getElementById('tipo'); // Obtener el elemento select por su ID
-    const selectedOption = selectElement.querySelector('option:checked').value;
-
-    console.log("TIpo: " + selectedOption); 
-    return selectedOption;
-}
-
-function obtenerValorCheckBot(id) { // CHECKBOX
-    const checkbox = document.getElementById(id);
-    
-    if (checkbox.checked) {
-        return checkbox.value;
-    } else {
-        return "false";
-    }
-}
-
-function addRowClickListener(row, index) {
-    row.addEventListener('click', () => {
-        const cells = row.querySelectorAll('td');
-        const rowData = Array.from(cells).map(cell => cell.textContent);
-        selectedItemIndex = index;
-        inicirEdicion(rowData); 
-    });
-
-}
-
-async function inicirEdicion(planeta) {
-    console.log(planeta[0]);
-    formulario.querySelector("#Nombre").value = planeta[1];
-    formulario.querySelector("#Tamaño").value = planeta[2];
-    formulario.querySelector("#Masa").value = planeta[3];
-    formulario.querySelector("#tipo").value = planeta[4];
-    formulario.querySelector("#Distancia").value = planeta[5];
-
-    if (planeta[6] === "true") {
-        formulario.querySelector("#pvida").checked = true;
-    }  else {
-        formulario.querySelector("#pvida").checked = false;
-    }
-
-    if (planeta[7] === "true") {
-        formulario.querySelector("#panillo").checked = true;
-    } else {
-        formulario.querySelector("#panillo").checked = false;
-    }
-
-    formulario.querySelector("#composicion").value = planeta[8];
-
-    mostrarBotones();
-}
-
-async function editarItem() {
-    const btn = document.getElementById("btn-edit");
-    btn.addEventListener('click', async () =>{
-        if (selectedItemIndex === null) return;
-    
-        const item = items[selectedItemIndex]; // Obtener el item a editar
-        // var fechaActual = new Date();
-
-        const model = new Planeta(
-        item.id,
-        formulario.querySelector("#Nombre").value,
-        formulario.querySelector("#Tamaño").value,
-        formulario.querySelector("#Masa").value,
-        getselect(), // Obtener valor de select
-        formulario.querySelector("#Distancia").value,
-        obtenerValorCheckBot('pvida'),
-        obtenerValorCheckBot('panillo'), 
-        formulario.querySelector("#composicion").value
-        );
-        
-        // const respuesta = true;
-    
-        
-        mostrarSpinner();
-        console.log("EDITANDO: " + item.id);
-        try {
-            await UpdateById(item.id, model); // Editar en el servidor
-            // await loadItems(); // Volver a cargar los items y actualizar la tabla
-            await actualizarFormulario();
-            await actualizadorTabla();
-            await ocultarBotones(); // Ocultar botones de edición
-            selectedItemIndex = null; // Resetear el índice seleccionado
-        } catch (error) {
-            alert(error);
-            console.log(error);
-        } finally {
-            console.log("Listo");
-            ocultarSpinner();
-        }
-
-    });
-}
-
-async function back() {
-    const btn = document.getElementById("btn-back");
-
-    btn.addEventListener("click", async () => {
-    const rta = confirm('¿Desea dejar de editar?');
-
-    if (rta) {
-        try {
-            console.log("Volviendo atras...");
-            await mostrarSpinner();
-            await actualizarFormulario();
-            await ocultarBotones(); 
-        } catch (error) {
-            alert(error);
-        } finally {
-            console.log("Listo!!");
-            ocultarSpinner();
-        }
-    }
-    });
-}
-
 
 async function eliminarUno() {
     const btn = document.getElementById("btn-delete-one");
@@ -320,7 +170,167 @@ async function eliminarUno() {
 }
 
 
-// PROMEDIO Y FILTRAR TABLA:
+async function crearUno() {
+    formulario.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        var fechaActual = new Date();
+
+        const model = new AnuncioAuto(
+            fechaActual.getTime(),
+            formulario.querySelector("#titulo").value,
+            getselect(), 
+            formulario.querySelector("#descripcion").value,
+            formulario.querySelector("#precio").value,
+            formulario.querySelector("#kilometros").value, 
+            formulario.querySelector("#puertas").value, 
+            formulario.querySelector("#potencia").value
+        );
+        
+        console.log(model); // Verifica en la consola si los valores se están obteniendo correctamente
+        
+        try {
+            console.log("Creando...");
+            await mostrarSpinner();
+            await CreateOne(model).then(() => {
+                actualizarFormulario(); 
+                actualizadorTabla();
+            });
+        } catch (error) {
+            alert("Error al crear auto: " + error.message);
+        } finally {
+            console.log("Auto creado");
+            ocultarSpinner();
+        }
+    });
+}
+
+
+function getselect() { // CHECKBOX
+    const radios = document.getElementsByName("transaccion");
+    
+    for (let i = 0; i < radios.length; i++) {
+        if (radios[i].checked) {
+            return radios[i].value;
+        }
+    }
+    
+    return "";
+}
+
+
+function addRowClickListener(row, index) {
+    row.addEventListener('click', () => {
+        const cells = row.querySelectorAll('td');
+        const rowData = Array.from(cells).map(cell => cell.textContent);
+        selectedItemIndex = index;
+        inicirEdicion(rowData); 
+    });
+
+}
+
+
+async function inicirEdicion(auto) {
+    console.log(auto[0]);
+    console.log(auto[1]);
+    console.log(auto);
+    formulario.querySelector("#titulo").value = auto[1];
+    // formulario.querySelector("#transaccion").value = auto[2];
+    formulario.querySelector("#descripcion").value = auto[3];
+    formulario.querySelector("#precio").value = auto[4];
+    formulario.querySelector("#kilometros").value = auto[5];
+    formulario.querySelector("#puertas").value = auto[6];
+    formulario.querySelector("#potencia").value = auto[7];
+
+
+
+    if (auto[2] === "venta") {
+        formulario.querySelector("#rventa").checked = true;
+    }  else {
+        formulario.querySelector("#rAlquiler").checked = true;
+    }
+
+    mostrarBotones();
+}
+
+async function back() {
+    const btn = document.getElementById("btn-back");
+
+    btn.addEventListener("click", async () => {
+    const rta = confirm('¿Desea dejar de editar?');
+
+    if (rta) {
+        try {
+            console.log("Volviendo atras...");
+            await mostrarSpinner();
+            await actualizarFormulario();
+            await ocultarBotones(); 
+        } catch (error) {
+            alert(error);
+        } finally {
+            console.log("Listo!!");
+            ocultarSpinner();
+        }
+    }
+    });
+}
+
+
+async function editarItem() {
+    const btn = document.getElementById("btn-edit");
+    btn.addEventListener('click', async () =>{
+        if (selectedItemIndex === null) return;
+    
+        const item = items[selectedItemIndex]; // Obtener el item a editar
+        // var fechaActual = new Date();
+
+        const model = new AnuncioAuto(
+            item.id,
+            formulario.querySelector("#titulo").value,
+            getselect(), 
+            formulario.querySelector("#descripcion").value,
+            formulario.querySelector("#precio").value,
+            formulario.querySelector("#kilometros").value, 
+            formulario.querySelector("#puertas").value, 
+            formulario.querySelector("#potencia").value
+        );
+        
+        // const respuesta = true;
+    
+        
+        mostrarSpinner();
+        console.log("EDITANDO: " + item.id);
+        try {
+            await UpdateById(item.id, model); // Editar en el servidor
+            // await loadItems(); // Volver a cargar los items y actualizar la tabla
+            await actualizarFormulario();
+            await actualizadorTabla();
+            await ocultarBotones(); // Ocultar botones de edición
+            selectedItemIndex = null; // Resetear el índice seleccionado
+        } catch (error) {
+            alert(error);
+            console.log(error);
+        } finally {
+            console.log("Listo");
+            ocultarSpinner();
+        }
+
+    });
+}
+
+async function btnCancelar() {
+    const btn = document.getElementById("cancelador");
+
+    btn.addEventListener("click", async () => {
+        mostrarSpinner();
+        console.log("reiniciando...");
+        await actualizadorTabla(); // Resetear el formulario
+        await actualizarEncabezadoTabla();
+        ocultarSpinner();
+        console.log("listo!");
+    });
+}
+
+
 async function obtenerPromedio() {
     const btn = document.getElementById("filtrador");
 
@@ -331,7 +341,7 @@ async function obtenerPromedio() {
         const tipoSeleccionado = selectElement.value.toLowerCase();
     
         if (!tipoSeleccionado) {
-            alert("Seleccione un tipo para calcular el promedio.");
+            alert("Seleccione una transaccion para calcular el promedio.");
             return;
         }
     
@@ -343,10 +353,10 @@ async function obtenerPromedio() {
     
         filas.forEach((fila) => {
             const celdas = fila.querySelectorAll("td");
-            const tipo = celdas[4].textContent.toLowerCase(); // Ajusta el índice según la estructura de tu tabla
-    
+            const tipo = celdas[2].textContent.toLowerCase(); // Ajusta el índice según la estructura de tu tabla
+            console.log(celdas[2]);
             if (tipo === tipoSeleccionado) {
-                const tamano = parseFloat(celdas[5].textContent); // Ajusta el índice según la estructura de tu tabla
+                const tamano = parseFloat(celdas[4].textContent); // Ajusta el índice según la estructura de tu tabla
                 if (!isNaN(tamano)) {
                     suma += tamano;
                     contador++;
@@ -356,7 +366,8 @@ async function obtenerPromedio() {
     
         const promedio = contador > 0 ? suma / contador : 0;
         const promedioResult = document.getElementById("promedio-result");
-    
+
+        console.log(promedio);
         if (promedio != 0) {
             promedioResult.value = promedio.toFixed(2);
         } else {
@@ -423,30 +434,12 @@ async function actualizarEncabezadoTabla() {
 
     header.innerHTML = `
         <th>ID</th>
-        <th>Nombre</th>
-        <th>Tamaño</th>
-        <th>Masa</th>
-        <th>Tipo</th>
-        <th>Distancia al Sol</th>
-        <th>Presencia de Vida</th>
-        <th>Posee Anillo</th>
-        <th>Composición Atmosférica</th>
+        <th>titulo</th>
+        <th>Transacción</th>
+        <th>descripcion</th>
+        <th>precio</th>
+        <th>cantidadKilometros</th>
+        <th>cantidadPuertas</th>
+        <th>potencia</th>
     `;
 }
-
-
-async function btnCancelar() {
-    const btn = document.getElementById("cancelador");
-
-    btn.addEventListener("click", async () => {
-        mostrarSpinner();
-        console.log("reiniciando...");
-        await actualizadorTabla(); // Resetear el formulario
-        await actualizarEncabezadoTabla();
-        ocultarSpinner();
-        console.log("listo!");
-    });
-}
-
-
-
