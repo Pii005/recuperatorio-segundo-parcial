@@ -7,15 +7,17 @@ app.use(cors()); // Habilita CORS para todas las rutas
 app.use(express.json());
 
 let autos = [
-    { id: 1, titulo: 'Ford Fiesta', transaccion: 'Venta', descripcion: 'Auto en buen estado', precio : 15000, cantidadKilometros: 80000, cantidadPuertas: 5, potencia: 120 },
+    { id: 1, titulo: 'Ford Fiesta', transaccion: 'Venta', 
+        descripcion: 'Auto en buen estado', 
+        precio : 15000, kms: 80000, puertas: 5, potencia: 120 },
     {
         id: 2,
         titulo: 'Chevrolet Cruze',
         transaccion: 'Alquiler',
         descripcion: 'Auto familiar',
         precio: 20000,
-        cantidadKilometros: 60000,
-        cantidadPuertas: 4,
+        kms: 60000,
+        puertas: 4,
         potencia: 140
     },
     {
@@ -24,8 +26,8 @@ let autos = [
         transaccion: 'Venta',
         descripcion: 'Auto con poco uso',
         precio: 22000,
-        cantidadKilometros: 30000,
-        cantidadPuertas: 4,
+        kms: 30000,
+        puertas: 4,
         potencia: 130
     }
 ];
@@ -46,15 +48,15 @@ app.get('/autos', simulateDelay, (req, res) => {
  * Crea un nuevo Planeta
  */
 app.post('/autos', simulateDelay, (req, res) => {
-    const { titulo, transaccion, descripcion, precio, cantidadKilometros, cantidadPuertas, potencia } = req.body;
+    const { titulo, transaccion, descripcion, precio, kms, puertas, potencia } = req.body;
     const nuevoPlaneta = {
         id: autos.length + 1,
         titulo,
         transaccion,
         descripcion,
         precio,
-        cantidadKilometros,
-        cantidadPuertas,
+        kms,
+        puertas,
         potencia
     };
     autos.push(nuevoPlaneta);
@@ -80,15 +82,15 @@ app.put('/autos/:id', simulateDelay, (req, res) => {
     const id = parseInt(req.params.id);
     const index = autos.findIndex(p => p.id === id);
     if (index !== -1) {
-        const { titulo, transaccion, descripcion, precio, cantidadKilometros, cantidadPuertas, potencia } = req.body;
+        const { titulo, transaccion, descripcion, precio, kms, puertas, potencia } = req.body;
         const updatedPlaneta = {
             id,
             titulo,
             transaccion,
             descripcion,
             precio,
-            cantidadKilometros,
-            cantidadPuertas,
+            kms,
+            puertas,
             potencia
         };
         autos[index] = updatedPlaneta;

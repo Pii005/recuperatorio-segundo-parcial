@@ -38,8 +38,8 @@ async function actualizadorTabla(e) {
             obj.transaccion,
             obj.descripcion,
             obj.precio,
-            obj.cantidadKilometros,
-            obj.cantidadPuertas,
+            obj.kms,
+            obj.puertas,
             obj.potencia
         ));
         await rellenarTabla(items);
@@ -80,8 +80,8 @@ async function rellenarTabla(items) {
         "transaccion",
         "descripcion",
         "precio",
-        "cantidadKilometros",
-        "cantidadPuertas",
+        "kms",
+        "puertas",
         "potencia"
     ];
     
@@ -181,7 +181,7 @@ async function crearUno() {
             getselect(), 
             formulario.querySelector("#descripcion").value,
             formulario.querySelector("#precio").value,
-            formulario.querySelector("#kilometros").value, 
+            formulario.querySelector("#kms").value, 
             formulario.querySelector("#puertas").value, 
             formulario.querySelector("#potencia").value
         );
@@ -237,7 +237,7 @@ async function inicirEdicion(auto) {
     // formulario.querySelector("#transaccion").value = auto[2];
     formulario.querySelector("#descripcion").value = auto[3];
     formulario.querySelector("#precio").value = auto[4];
-    formulario.querySelector("#kilometros").value = auto[5];
+    formulario.querySelector("#kms").value = auto[5];
     formulario.querySelector("#puertas").value = auto[6];
     formulario.querySelector("#potencia").value = auto[7];
 
@@ -289,13 +289,13 @@ async function editarItem() {
             getselect(), 
             formulario.querySelector("#descripcion").value,
             formulario.querySelector("#precio").value,
-            formulario.querySelector("#kilometros").value, 
+            formulario.querySelector("#kms").value, 
             formulario.querySelector("#puertas").value, 
             formulario.querySelector("#potencia").value
         );
-        
+        console.log(formulario.querySelector("#kms").value);
         // const respuesta = true;
-    
+        console.log(item.kms);
         
         mostrarSpinner();
         console.log("EDITANDO: " + item.id);
@@ -435,11 +435,11 @@ async function actualizarEncabezadoTabla() {
     header.innerHTML = `
         <th>ID</th>
         <th>titulo</th>
-        <th>Transacción</th>
+        <th>transaccion</th>
         <th>descripcion</th>
         <th>precio</th>
-        <th>cantidadKilometros</th>
-        <th>cantidadPuertas</th>
+        <th>kms</th>
+        <th>puertas</th>
         <th>potencia</th>
     `;
 }

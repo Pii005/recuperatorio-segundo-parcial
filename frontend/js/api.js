@@ -20,15 +20,16 @@ export function GetAll() {
     });
 }
 
+
 export function CreateOne(data) {
     const requestData = {
         id: data.id,
-        titulo: data.nombre,
+        titulo: data.titulo,
         transaccion: data.transaccion,
         descripcion: data.descripcion,
         precio: data.precio,
-        cantidadKilometros: data.cantidadKilometros,
-        cantidadPuertas: data.cantidadPuertas,
+        kms: data.kms,
+        puertas: data.puertas,
         potencia: data.potencia,
     };
 
